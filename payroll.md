@@ -1,4 +1,25 @@
+# AccessForAll
 
+## Banco de dados Payroll
+
+Nosso banco de dados em SQL Server foi desenvolvido para adptar a mudanças rapidas e um gerenciamento flexivel de todos os registros.
+Cada tabela possui uma coluna em boolean com o dado **BIT** chamada `isActive` que ativa e inativa registros 
+
+### Definições de tabelas
+
+**BENEFITS**
+* A tabela benefits representa os beneficios para os funcionários 
+
+**COMPANY**
+* A tabela company representa a empresa, com ela podemos registrar os dados da empresa e vincula o funcionário a empresa
+**DEPARTMENTS**
+* Na tabela departments é onde registramos os departamentos 
+**DIGITAL_DOT**
+**EMPLOYEES**
+**OFFICE**
+**REGISTRATION**
+**SALARY**
+**SYSTEM_USERS**
 ```sql
 --Criação do banco de dados Folha de pagamento (payroll)
 
