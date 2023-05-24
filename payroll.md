@@ -5,6 +5,7 @@
 Nosso banco de dados em SQL Server foi desenvolvido para adptar a mudanças rapidas e um gerenciamento flexivel de todos os registros.
 Cada tabela possui uma coluna em boolean com o dado **BIT** chamada `isActive` que ativa e inativa registros.
 
+
 ## Definições de tabelas
 
 **BENEFITS**
