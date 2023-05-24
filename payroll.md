@@ -3,23 +3,40 @@
 ## Banco de dados Payroll
 
 Nosso banco de dados em SQL Server foi desenvolvido para adptar a mudanças rapidas e um gerenciamento flexivel de todos os registros.
-Cada tabela possui uma coluna em boolean com o dado **BIT** chamada `isActive` que ativa e inativa registros 
+Cada tabela possui uma coluna em boolean com o dado **BIT** chamada `isActive` que ativa e inativa registros.
 
-### Definições de tabelas
+## Definições de tabelas
 
 **BENEFITS**
 * A tabela benefits representa os beneficios para os funcionários 
 
 **COMPANY**
 * A tabela company representa a empresa, com ela podemos registrar os dados da empresa e vincula o funcionário a empresa
+
 **DEPARTMENTS**
-* Na tabela departments é onde registramos os departamentos 
+* Na tabela departments é onde registramos os departamentos
+
 **DIGITAL_DOT**
+* Esta tabela digital dot armazena as horas trabalhadas pelo funcionário e fornece com precisão data, hora minuto e segundo além de informar a ação resgatada pelo horário (entrada, saída, retorno do pausa, etc...),
+seus dados serão coletados a partir de uma API de um equipamento em loco para registrar essas informações ou pelo aplicativo.
+
 **EMPLOYEES**
+* A tabela employees armazena as informações de um empregado.
+
 **OFFICE**
+* A tabela office é onde registramos os tipos de funções que os empregados possuem.
+
 **REGISTRATION**
+* Nessa tabela registration contém informações pessoais de um funcionário.
+
 **SALARY**
+*  Essa tabela salary tem como objetivo armazenar os valores de salários e é atribuída ao funcionário.
+
 **SYSTEM_USERS**
+* A tabela system_users guarda as informações de login do sistema.
+
+
+**Essa é a estrutura da tabela em SQL Server**
 ```sql
 --Criação do banco de dados Folha de pagamento (payroll)
 
@@ -279,6 +296,7 @@ Nessa sequencia temos um comando DELETE para remover do banco um beneficio mas p
 DELETE FROM benefits
 WHERE benefit_name = 'Plano de saúde' 
 ```
+
 Ou dados nós podemos inativar pela tabela "isActive"
 
 ```sql
@@ -286,3 +304,34 @@ UPDATE benefits
 SET isActive = 0
 WHERE benefit_name = 'Vale-refeição'
 ```
+# LGPD
+
+Para tratarmos da segurança de nossos dados, nós utilizamos o conceito de hash ao invés da criptografia tradicional fornecida pelo próprio SQL Server. Pois a criptografia ela pode ser descriptografada já o hash altera o valor e sua alteração é irreversível mas isso não impede o usuário de fazer o seu login com a senha original, iremos mostrar como.
+
+Em nossa tabela ‘system_users’ para realizar o login do sistema o usuário insere a senha e com isso o sistema libera o acesso, seguindo a ideia tradicional mas por trás dos panos o banco trabalha de forma diferente.
+
+```sql
+INSERT INTO system_users (user_name, email, password, permission_level, isActive)
+VALUES	('Gerente', 'gerente@payroll.com', HASHBYTES ('sha2_512', 'senha_gerente'), 'admin', 1);
+```
+
+Aqui nós adicionamos um novo usuário do sistema e já usamos a função HASHBYTES para alterar o valor da senha.
+Fizemos esse teste de acesso para mostrar como o sistema entenderá a senha digitada pelo usuário.
+
+```sql
+-- Teste de acesso
+use payroll
+
+
+declare @usr varchar(100) = 'Gerente'
+declare @pwd varchar(300) = 'Senha_errada'
+if hashbytes('sha2_512', @pwd) = (select password from system_users where user_name = @usr)
+    print 'Acesso OK'
+else
+    print 'Acesso NEGADO'
+
+```
+
+Quando o usuário digitar a sua senha o sistema irá pegar essa senha e converter como hash ao invés de compararmos as senhas originais de cada usuário nós iremos transformar a senha digitada pelo usuário em hashbytes e comparar com o valor tipo hashbytes para ver se ambas correspondem.
+
+Após a verificação da senha convertida em hashbytes o sistema autoriza o acesso e assim permite o login.
